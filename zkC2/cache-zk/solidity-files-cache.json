@@ -1,0 +1,123 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/home/alishba/Documents/uni/sem4/malware/project/zkC2/contracts/C2Factory.sol": {
+      "lastModificationDate": 1747657989228,
+      "contentHash": "85544b45d20ed9da0164b8abdc109188",
+      "sourceName": "contracts/C2Factory.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": true,
+            "mode": "3"
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "detectMissingLibraries": false,
+          "forceEVMLA": false,
+          "enableEraVMExtensions": false,
+          "codegen": "evmla",
+          "libraries": {}
+        },
+        "eraVersion": "1.0.1",
+        "zksolc": {
+          "version": "1.5.12",
+          "compilerSource": "binary",
+          "settings": {
+            "optimizer": {
+              "enabled": true,
+              "mode": "3"
+            },
+            "compilerPath": "/home/alishba/.cache/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.12",
+            "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
+            "areLibrariesMissing": false,
+            "experimental": {},
+            "codegen": "evmla",
+            "libraries": {},
+            "enableEraVMExtensions": false,
+            "forceEVMLA": false
+          }
+        }
+      },
+      "imports": [
+        "./EphemeralC2.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "C2Factory"
+      ]
+    },
+    "/home/alishba/Documents/uni/sem4/malware/project/zkC2/contracts/EphemeralC2.sol": {
+      "lastModificationDate": 1747736026217,
+      "contentHash": "ee3ec681994b23f7362a9e507c5bce80",
+      "sourceName": "contracts/EphemeralC2.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": true,
+            "mode": "3"
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "detectMissingLibraries": false,
+          "forceEVMLA": false,
+          "enableEraVMExtensions": false,
+          "codegen": "evmla",
+          "libraries": {}
+        },
+        "eraVersion": "1.0.1",
+        "zksolc": {
+          "version": "1.5.12",
+          "compilerSource": "binary",
+          "settings": {
+            "optimizer": {
+              "enabled": true,
+              "mode": "3"
+            },
+            "compilerPath": "/home/alishba/.cache/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.12",
+            "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
+            "areLibrariesMissing": false,
+            "experimental": {},
+            "codegen": "evmla",
+            "libraries": {},
+            "enableEraVMExtensions": false,
+            "forceEVMLA": false
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "EphemeralC2"
+      ]
+    }
+  }
+}
